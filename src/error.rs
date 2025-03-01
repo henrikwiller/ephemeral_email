@@ -13,6 +13,10 @@ pub enum InboxCreationError {
     InvalidDomain(String),
     #[error("The domain {0} is not valid for provider {1}")]
     InvalidDomainForProvider(String, ProviderType),
+    #[error("Name is already taken by someone else: {0}")]
+    NameTaken(String),
+    #[error("Name is invalid: {0}")]
+    InvalidName(String),
 }
 
 #[derive(Debug, thiserror::Error)]

@@ -7,6 +7,7 @@ use crate::domain::Domain;
 use crate::email::Message;
 use crate::error::{InboxCreationError, InboxError};
 
+mod mail_tm;
 mod muellmail;
 
 #[async_trait::async_trait]
@@ -28,18 +29,20 @@ pub(crate) trait Provider {
 
 #[derive(Debug, Clone, Copy)]
 pub enum ProviderType {
+    MailTm,
     Muellmail,
 }
 
 impl ProviderType {
     pub(crate) fn get_provider(&self) -> Box<dyn Provider> {
         match self {
+            ProviderType::MailTm => Box::new(mail_tm::MailTmProvider::new()),
             ProviderType::Muellmail => Box::new(MuellmailProvider::new()),
         }
     }
 
     pub(crate) fn get_all_providers() -> Vec<ProviderType> {
-        vec![ProviderType::Muellmail]
+        vec![ProviderType::MailTm, ProviderType::Muellmail]
     }
 }
 
@@ -54,6 +57,7 @@ impl Distribution<ProviderType> for StandardUniform {
 impl Display for ProviderType {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
+            ProviderType::MailTm => write!(f, "Mail.tm"),
             ProviderType::Muellmail => write!(f, "Muellmail"),
         }
     }
