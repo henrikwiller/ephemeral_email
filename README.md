@@ -32,12 +32,9 @@ async fn main() -> Result<()> {
         .name("test")
         .create_inbox()
         .await?;
+    println!("Created inbox with email: {}", inbox.get_email_address());
     let messages = inbox.get_messages().await?;
-    println!(
-        "Got {} messages for email {}",
-        messages.len(),
-        inbox.get_email_address()
-    );
+    println!("Got {} messages:", messages.len());
     for message in messages {
         println!("From: {}", message.from.unwrap());
     }
