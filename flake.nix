@@ -44,17 +44,11 @@
 
             mkDerivation = {
               src = ./.;
-              nativeBuildInputs = [
-                config.deps.openssl.dev
-                config.deps.pkg-config
-              ];
             };
             rust-crane = {
               buildCommand = "build --examples";
               depsDrv = {
                 mkDerivation.nativeBuildInputs = [
-                  config.deps.openssl.dev
-                  config.deps.pkg-config
                   config.deps.git
                   config.deps.cmake
                   config.deps.clang

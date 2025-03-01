@@ -4,8 +4,6 @@ use crate::provider::ProviderType;
 #[non_exhaustive]
 pub enum InboxCreationError {
     #[error("Request error: {0}")]
-    ReqwestError(#[from] reqwest::Error),
-    #[error("Request error: {0}")]
     RquestError(#[from] rquest::Error),
     #[error("Cannot setup email: {0}")]
     SetupError(String),
@@ -22,8 +20,6 @@ pub enum InboxCreationError {
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum InboxError {
-    #[error("Request error: {0}")]
-    ReqwestError(#[from] reqwest::Error),
     #[error("Request error: {0}")]
     RquestError(#[from] rquest::Error),
     #[error("Cannot get messages: {0}")]
