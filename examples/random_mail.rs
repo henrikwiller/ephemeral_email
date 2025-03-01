@@ -1,5 +1,5 @@
 use anyhow::Result;
-use ephemeral_email::{provider::ProviderType, temp_mail::TempMail};
+use ephemeral_email::{ProviderType, TempMail};
 
 #[tokio::main]
 async fn main() -> Result<()> {

@@ -28,6 +28,7 @@ pub(crate) trait Provider {
 }
 
 #[derive(Debug, Clone, Copy)]
+#[non_exhaustive]
 pub enum ProviderType {
     MailTm,
     Muellmail,

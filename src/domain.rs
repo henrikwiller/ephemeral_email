@@ -1,6 +1,7 @@
 use std::fmt::{self, Display, Formatter};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[non_exhaustive]
 pub enum Domain {
     TenMinMailDe,
     TenMinutenMailXyz,

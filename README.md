@@ -22,18 +22,17 @@ ephemeral_email = "0.1"
 
 Example usage:
 ```rust
-use anyhow::Result;
-use ephemeral_email::{provider::ProviderType, temp_mail::TempMail};
+use ephemeral_email::{ProviderType, TempMail};
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     let mut inbox = TempMail::new()
         .provider_type(ProviderType::Muellmail)
         .name("test")
         .create_inbox()
         .await?;
     println!("Created inbox with email: {}", inbox.get_email_address());
-    let messages = inbox.get_messages().await?;
+    let messages = inbox.get_messages().await.unwrap();
     println!("Got {} messages:", messages.len());
     for message in messages {
         println!("From: {}", message.from.unwrap());
