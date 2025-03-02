@@ -4,17 +4,11 @@ use muellmail::MuellmailProvider;
 use rand::distr::{Distribution, StandardUniform};
 
 use crate::domain::Domain;
-use crate::email::Message;
-use crate::error::{InboxCreationError, InboxError};
+use crate::error::InboxCreationError;
+use crate::{EmailAddress, InboxError, Message};
 
 mod mail_tm;
 mod muellmail;
-
-#[async_trait::async_trait]
-pub trait Inbox {
-    async fn get_messages(&mut self) -> Result<Vec<Message>, InboxError>;
-    fn get_email_address(&self) -> String;
-}
 
 #[async_trait::async_trait]
 pub(crate) trait Provider {
@@ -22,7 +16,7 @@ pub(crate) trait Provider {
         &mut self,
         name: Option<&str>,
         domain: Option<Domain>,
-    ) -> Result<Box<dyn Inbox>, InboxCreationError>;
+    ) -> Result<Inbox, InboxCreationError>;
 
     fn get_domains(&self) -> Vec<Domain>;
 }
@@ -47,6 +41,15 @@ impl ProviderType {
     }
 }
 
+impl Display for ProviderType {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        match self {
+            ProviderType::MailTm => write!(f, "Mail.tm"),
+            ProviderType::Muellmail => write!(f, "Muellmail"),
+        }
+    }
+}
+
 impl Distribution<ProviderType> for StandardUniform {
     fn sample<R: rand::Rng + ?Sized>(&self, rng: &mut R) -> ProviderType {
         let provider_types = ProviderType::get_all_providers();
@@ -55,11 +58,22 @@ impl Distribution<ProviderType> for StandardUniform {
     }
 }
 
-impl Display for ProviderType {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        match self {
-            ProviderType::MailTm => write!(f, "Mail.tm"),
-            ProviderType::Muellmail => write!(f, "Muellmail"),
-        }
+#[async_trait::async_trait]
+pub trait MessageFetcher: Send + Sync {
+    async fn get_messages(&mut self) -> Result<Vec<Message>, InboxError>;
+}
+
+pub struct Inbox {
+    message_fetcher: Box<dyn MessageFetcher>,
+    email_address: EmailAddress,
+}
+
+impl Inbox {
+    pub fn get_email_address(&self) -> &EmailAddress {
+        &self.email_address
+    }
+
+    pub async fn get_messages(&mut self) -> Result<Vec<Message>, InboxError> {
+        self.message_fetcher.get_messages().await
     }
 }

@@ -1,8 +1,4 @@
-use crate::{
-    domain::Domain,
-    error::InboxCreationError,
-    provider::{Inbox, ProviderType},
-};
+use crate::{domain::Domain, error::InboxCreationError, provider::ProviderType, Inbox};
 
 pub struct TempMail {
     provider_type: Option<ProviderType>,
@@ -34,7 +30,7 @@ impl TempMail {
         self
     }
 
-    pub async fn create_inbox(self) -> Result<Box<dyn Inbox>, InboxCreationError> {
+    pub async fn create_inbox(self) -> Result<Inbox, InboxCreationError> {
         let provider_type = match (self.provider_type, self.domain) {
             (Some(provider_type), None) => provider_type,
             (Some(provider_type), Some(_)) => provider_type,

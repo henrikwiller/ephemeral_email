@@ -7,12 +7,11 @@ use serde_json::json;
 
 use crate::{domain::Domain, email::EmailAddress, error::InboxCreationError};
 
-use super::{Inbox, Provider};
+use super::{Inbox, MessageFetcher, Provider};
 
 pub(crate) struct MailTmProvider {}
 
-pub(crate) struct MailTmInbox {
-    email: EmailAddress,
+pub(crate) struct MailTmMessageFetcher {
     client: Client,
 }
 
@@ -97,7 +96,7 @@ impl Provider for MailTmProvider {
         &mut self,
         name: Option<&str>,
         domain: Option<Domain>,
-    ) -> Result<Box<dyn Inbox>, InboxCreationError> {
+    ) -> Result<Inbox, InboxCreationError> {
         let domain = domain.unwrap_or_else(|| {
             self.get_domains()
                 .choose(&mut rand::rng())
@@ -116,7 +115,10 @@ impl Provider for MailTmProvider {
                 "Authorization",
                 HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
             );
-            return Ok(Box::new(MailTmInbox { email, client }));
+            return Ok(Inbox {
+                message_fetcher: Box::new(MailTmMessageFetcher { client }),
+                email_address: email,
+            });
         }
 
         let login_response = client
@@ -159,7 +161,10 @@ impl Provider for MailTmProvider {
             "Authorization",
             HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
         );
-        Ok(Box::new(MailTmInbox { email, client }))
+        Ok(Inbox {
+            message_fetcher: Box::new(MailTmMessageFetcher { client }),
+            email_address: email,
+        })
     }
 
     fn get_domains(&self) -> Vec<Domain> {
@@ -168,7 +173,7 @@ impl Provider for MailTmProvider {
 }
 
 #[async_trait::async_trait]
-impl Inbox for MailTmInbox {
+impl MessageFetcher for MailTmMessageFetcher {
     async fn get_messages(
         &mut self,
     ) -> Result<Vec<crate::email::Message>, crate::error::InboxError> {
@@ -195,9 +200,5 @@ impl Inbox for MailTmInbox {
         }
 
         Ok(messages)
-    }
-
-    fn get_email_address(&self) -> String {
-        self.email.to_string()
     }
 }

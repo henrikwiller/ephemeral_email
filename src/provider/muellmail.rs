@@ -4,13 +4,12 @@ use crate::error::{InboxCreationError, InboxError};
 use rand::distr::{Alphanumeric, SampleString};
 use rquest::{Client, Impersonate};
 
-use super::{Inbox, Provider};
+use super::{Inbox, MessageFetcher, Provider};
 use rand::seq::IndexedRandom;
 
 pub(crate) struct MuellmailProvider {}
 
-pub(crate) struct MuellmailInbox {
-    email: EmailAddress,
+pub(crate) struct MuellmailMessageFetcher {
     client: Client,
 }
 
@@ -74,7 +73,7 @@ impl Provider for MuellmailProvider {
         &mut self,
         name: Option<&str>,
         domain: Option<Domain>,
-    ) -> Result<Box<dyn Inbox>, InboxCreationError> {
+    ) -> Result<Inbox, InboxCreationError> {
         let domain = domain.unwrap_or_else(|| {
             self.get_domains()
                 .choose(&mut rand::rng())
@@ -119,7 +118,10 @@ impl Provider for MuellmailProvider {
             )));
         }
 
-        Ok(Box::new(MuellmailInbox { email, client }))
+        Ok(Inbox {
+            message_fetcher: Box::new(MuellmailMessageFetcher { client }),
+            email_address: email,
+        })
     }
 
     fn get_domains(&self) -> Vec<Domain> {
@@ -163,7 +165,7 @@ impl Provider for MuellmailProvider {
 }
 
 #[async_trait::async_trait]
-impl Inbox for MuellmailInbox {
+impl MessageFetcher for MuellmailMessageFetcher {
     async fn get_messages(&mut self) -> Result<Vec<crate::email::Message>, InboxError> {
         let session_response = self
             .client
@@ -224,9 +226,5 @@ impl Inbox for MuellmailInbox {
             .into_iter()
             .map(Into::into)
             .collect())
-    }
-
-    fn get_email_address(&self) -> String {
-        self.email.to_string()
     }
 }
