@@ -9,7 +9,7 @@ pub struct Message {
     pub body: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct EmailAddress {
     pub name: String,
     pub domain: Domain,

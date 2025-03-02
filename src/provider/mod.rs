@@ -21,7 +21,7 @@ pub(crate) trait Provider {
     fn get_domains(&self) -> Vec<Domain>;
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum ProviderType {
     MailTm,
