@@ -6,6 +6,6 @@ mod temp_mail;
 
 pub use domain::Domain;
 pub use email::{EmailAddress, Message};
-pub use error::{BuilderError, InboxCreationError, InboxError};
+pub use error::{EmailAddressError, InboxCreationError, MessageFetcherError};
 pub use provider::{Inbox, ProviderType};
 pub use temp_mail::TempMail;

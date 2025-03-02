@@ -1,6 +1,7 @@
 use crate::domain::Domain;
 use crate::email::EmailAddress;
-use crate::error::{InboxCreationError, InboxError};
+use crate::error::{InboxCreationError, MessageFetcherError};
+use crate::Message;
 use rquest::{Client, Impersonate};
 
 use super::{Inbox, MessageFetcher, Provider};
@@ -67,10 +68,8 @@ impl MuellmailProvider {
 
 #[async_trait::async_trait]
 impl Provider for MuellmailProvider {
-    async fn new_inbox_from_email(
-        &mut self,
-        email: EmailAddress,
-    ) -> Result<Inbox, InboxCreationError> {
+    async fn new_inbox(&mut self, name: &str, domain: Domain) -> Result<Inbox, InboxCreationError> {
+        let email = EmailAddress::new(name, domain);
         let client = Client::builder()
             .cookie_store(true)
             .impersonate(Impersonate::Firefox135)
@@ -98,7 +97,7 @@ impl Provider for MuellmailProvider {
             .await?;
 
         if anon.url != "https://muellmail.com/en" {
-            return Err(InboxCreationError::SetupError(format!(
+            return Err(InboxCreationError::CreationError(format!(
                 "Invalid response url {}",
                 anon.url
             )));
@@ -156,17 +155,16 @@ impl Provider for MuellmailProvider {
 
 #[async_trait::async_trait]
 impl MessageFetcher for MuellmailMessageFetcher {
-    async fn get_messages(&mut self) -> Result<Vec<crate::email::Message>, InboxError> {
+    async fn fetch_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError> {
         let session_response = self
             .client
             .get("https://muellmail.com/api/auth/session")
             .send()
             .await?;
         if session_response.status() != 200 {
-            return Err(InboxError::GetMessageError(format!(
-                "Invalid response status {}",
-                session_response.status()
-            )));
+            return Err(MessageFetcherError::InvalidResponseStatus(
+                session_response.status(),
+            ));
         }
 
         let message_query_response: MessageQueryResponse = self

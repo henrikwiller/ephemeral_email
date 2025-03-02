@@ -1,6 +1,4 @@
-use crate::{
-    domain::Domain, error::InboxCreationError, provider::ProviderType, EmailAddress, Inbox,
-};
+use crate::{domain::Domain, error::InboxCreationError, provider::ProviderType, Inbox};
 
 pub struct TempMail {
     provider_type: Option<ProviderType>,
@@ -33,33 +31,35 @@ impl TempMail {
     }
 
     pub async fn create_inbox(self) -> Result<Inbox, InboxCreationError> {
-        let provider_type = match (self.provider_type, self.domain) {
+        let provider_type = match (self.provider_type, &self.domain) {
             (Some(provider_type), None) => provider_type,
             (Some(provider_type), Some(_)) => provider_type,
             (None, None) => rand::random(),
-            (None, Some(_)) => {
+            (None, Some(domain)) => {
                 let provider_types = ProviderType::get_all_providers();
                 *provider_types
                     .iter()
                     .find(|provider_type| {
-                        provider_type
-                            .get_provider()
-                            .get_domains()
-                            .contains(&self.domain.unwrap())
+                        provider_type.get_provider().get_domains().contains(domain)
                     })
-                    .ok_or(InboxCreationError::NoProviderForDomain(
-                        self.domain.unwrap().to_string(),
-                    ))?
+                    .ok_or(InboxCreationError::NoProviderForDomain(domain.to_string()))?
             }
         };
         let mut provider = provider_type.get_provider();
 
-        match (self.name, self.domain) {
-            (Some(name), Some(domain)) => {
-                provider
-                    .new_inbox_from_email(EmailAddress::new(name, domain))
-                    .await
+        if let Some(ref domain) = self.domain {
+            if !provider.get_domains().contains(domain)
+                && !(provider.support_custom_domains() && matches!(domain, Domain::Custom(_)))
+            {
+                return Err(InboxCreationError::InvalidDomainForProvider(
+                    domain.to_string(),
+                    provider.get_provider_type(),
+                ));
             }
+        }
+
+        match (self.name, self.domain) {
+            (Some(name), Some(domain)) => provider.new_inbox(&name, domain).await,
             (Some(name), None) => provider.new_random_inbox_from_name(&name).await,
             (None, Some(domain)) => provider.new_random_inbox_from_domain(domain).await,
             (None, None) => provider.new_random_inbox().await,

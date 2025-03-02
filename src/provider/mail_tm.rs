@@ -1,7 +1,9 @@
 use rquest::{header::HeaderValue, Client};
 use serde_json::json;
 
-use crate::{domain::Domain, email::EmailAddress, error::InboxCreationError};
+use crate::{
+    domain::Domain, email::EmailAddress, error::InboxCreationError, Message, MessageFetcherError,
+};
 
 use super::{Inbox, MessageFetcher, Provider};
 
@@ -80,7 +82,7 @@ async fn try_login(client: &Client, email: &EmailAddress) -> Result<String, Inbo
         return Ok(login_response.token);
     }
 
-    Err(InboxCreationError::SetupError(format!(
+    Err(InboxCreationError::CreationError(format!(
         "Failed to login into: {}",
         email
     )))
@@ -88,10 +90,8 @@ async fn try_login(client: &Client, email: &EmailAddress) -> Result<String, Inbo
 
 #[async_trait::async_trait]
 impl Provider for MailTmProvider {
-    async fn new_inbox_from_email(
-        &mut self,
-        email: EmailAddress,
-    ) -> Result<Inbox, InboxCreationError> {
+    async fn new_inbox(&mut self, name: &str, domain: Domain) -> Result<Inbox, InboxCreationError> {
+        let email = EmailAddress::new(name, domain);
         let mut client = Client::builder().cookie_store(true).build()?;
 
         if let Ok(token) = try_login(&client, &email).await {
@@ -130,7 +130,7 @@ impl Provider for MailTmProvider {
                 }
             }
 
-            return Err(InboxCreationError::SetupError(format!(
+            return Err(InboxCreationError::CreationError(format!(
                 "Failed to create inbox: {}",
                 violation
                     .violations
@@ -162,9 +162,7 @@ impl Provider for MailTmProvider {
 
 #[async_trait::async_trait]
 impl MessageFetcher for MailTmMessageFetcher {
-    async fn get_messages(
-        &mut self,
-    ) -> Result<Vec<crate::email::Message>, crate::error::InboxError> {
+    async fn fetch_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError> {
         let email_list: Vec<EmailListEntry> = self
             .client
             .get("https://api.mail.tm/messages")

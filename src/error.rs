@@ -1,3 +1,5 @@
+use rquest::StatusCode;
+
 use crate::provider::ProviderType;
 
 #[derive(Debug, thiserror::Error)]
@@ -5,8 +7,12 @@ use crate::provider::ProviderType;
 pub enum InboxCreationError {
     #[error("Request error: {0}")]
     RquestError(#[from] rquest::Error),
-    #[error("Cannot setup email: {0}")]
-    SetupError(String),
+    #[error("Cannot create inbox: {0}")]
+    CreationError(String),
+    #[error("Provider not implemented")]
+    ProviderNotImplemented,
+    #[error("Provider does not support specifying a domain")]
+    DomainNotSupported,
     #[error("Could not find a provider for {0}")]
     NoProviderForDomain(String),
     #[error("The domain {0} is not valid for provider {1}")]
@@ -15,25 +21,22 @@ pub enum InboxCreationError {
     NameTaken(String),
     #[error("Name is invalid: {0}")]
     InvalidName(String),
-    #[error("Provider not implemented")]
-    ProviderNotImplemented,
+    #[error("An invalid email address was returned: {0}")]
+    InvalidEmailAddress(#[from] EmailAddressError),
 }
 
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
-pub enum InboxError {
+pub enum MessageFetcherError {
     #[error("Request error: {0}")]
     RquestError(#[from] rquest::Error),
-    #[error("Cannot get messages: {0}")]
-    GetMessageError(String),
+    #[error("Invalid response status: {0}")]
+    InvalidResponseStatus(StatusCode),
 }
 
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
-pub enum BuilderError {
-    #[error("Cannot create inbox: {0}")]
-    InboxCreationError(#[from] InboxCreationError),
-
-    #[error("Cannot specify name for provider {0}")]
-    NameSpecified(ProviderType),
+pub enum EmailAddressError {
+    #[error("Invalid email address: {0}")]
+    InvalidEmailAddress(String),
 }

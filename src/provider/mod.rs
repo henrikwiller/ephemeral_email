@@ -6,61 +6,60 @@ use rand::seq::IndexedRandom;
 
 use crate::domain::Domain;
 use crate::error::InboxCreationError;
-use crate::{EmailAddress, InboxError, Message};
+use crate::{EmailAddress, Message, MessageFetcherError};
 
 mod mail_tm;
 mod muellmail;
+mod tempmail_lol;
 
 #[async_trait::async_trait]
 pub(crate) trait Provider: Send + Sync {
     async fn new_random_inbox(&mut self) -> Result<Inbox, InboxCreationError> {
-        let domain = self
-            .get_domains()
-            .choose(&mut rand::rng())
-            .expect("No domains available")
-            .clone();
-
-        self.new_random_inbox_from_domain(domain).await
+        if let Ok(domain) = self.get_random_domain() {
+            return self.new_random_inbox_from_domain(domain).await;
+        }
+        self.new_random_inbox_from_name(&self.get_random_name())
+            .await
     }
 
     async fn new_random_inbox_from_domain(
         &mut self,
         domain: Domain,
     ) -> Result<Inbox, InboxCreationError> {
-        if !self.get_domains().contains(&domain) {
-            return Err(InboxCreationError::InvalidDomainForProvider(
-                domain.to_string(),
-                self.get_provider_type(),
-            ));
-        }
-        let name = Alphanumeric.sample_string(&mut rand::rng(), 8);
-        self.new_inbox_from_email(EmailAddress::new(name, domain))
-            .await
+        self.new_inbox(&self.get_random_name(), domain).await
     }
 
     async fn new_random_inbox_from_name(
         &mut self,
         name: &str,
     ) -> Result<Inbox, InboxCreationError> {
-        let domain = self
-            .get_domains()
-            .choose(&mut rand::rng())
-            .expect("No domains available")
-            .clone();
-
-        self.new_inbox_from_email(EmailAddress::new(name.into(), domain))
-            .await
+        self.new_inbox(name, self.get_random_domain()?).await
     }
 
-    async fn new_inbox_from_email(
+    async fn new_inbox(
         &mut self,
-        _email: EmailAddress,
+        _name: &str,
+        _domain: Domain,
     ) -> Result<Inbox, InboxCreationError> {
         Err(InboxCreationError::ProviderNotImplemented)
     }
 
-    fn get_domains(&self) -> Vec<Domain>;
+    fn get_random_name(&self) -> String {
+        Alphanumeric.sample_string(&mut rand::rng(), 8)
+    }
+    fn get_random_domain(&self) -> Result<Domain, InboxCreationError> {
+        self.get_domains()
+            .choose(&mut rand::rng())
+            .ok_or(InboxCreationError::DomainNotSupported)
+            .cloned()
+    }
+    fn get_domains(&self) -> Vec<Domain> {
+        vec![]
+    }
     fn get_provider_type(&self) -> ProviderType;
+    fn support_custom_domains(&self) -> bool {
+        false
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -68,6 +67,7 @@ pub(crate) trait Provider: Send + Sync {
 pub enum ProviderType {
     MailTm,
     Muellmail,
+    TempMailLol,
 }
 
 impl ProviderType {
@@ -75,11 +75,16 @@ impl ProviderType {
         match self {
             ProviderType::MailTm => Box::new(mail_tm::MailTmProvider::new()),
             ProviderType::Muellmail => Box::new(MuellmailProvider::new()),
+            ProviderType::TempMailLol => Box::new(tempmail_lol::TempMailLolProvider::new()),
         }
     }
 
     pub(crate) fn get_all_providers() -> Vec<ProviderType> {
-        vec![ProviderType::MailTm, ProviderType::Muellmail]
+        vec![
+            ProviderType::MailTm,
+            ProviderType::Muellmail,
+            ProviderType::TempMailLol,
+        ]
     }
 }
 
@@ -88,6 +93,7 @@ impl Display for ProviderType {
         match self {
             ProviderType::MailTm => write!(f, "Mail.tm"),
             ProviderType::Muellmail => write!(f, "Muellmail"),
+            ProviderType::TempMailLol => write!(f, "TempMail.lol"),
         }
     }
 }
@@ -102,7 +108,7 @@ impl Distribution<ProviderType> for StandardUniform {
 
 #[async_trait::async_trait]
 pub trait MessageFetcher: Send + Sync {
-    async fn get_messages(&mut self) -> Result<Vec<Message>, InboxError>;
+    async fn fetch_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError>;
 }
 
 pub struct Inbox {
@@ -115,7 +121,7 @@ impl Inbox {
         &self.email_address
     }
 
-    pub async fn get_messages(&mut self) -> Result<Vec<Message>, InboxError> {
-        self.message_fetcher.get_messages().await
+    pub async fn get_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError> {
+        self.message_fetcher.fetch_messages().await
     }
 }
