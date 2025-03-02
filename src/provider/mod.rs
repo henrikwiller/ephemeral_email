@@ -1,7 +1,8 @@
 use std::fmt::{self, Display, Formatter};
 
 use muellmail::MuellmailProvider;
-use rand::distr::{Distribution, StandardUniform};
+use rand::distr::{Alphanumeric, Distribution, SampleString, StandardUniform};
+use rand::seq::IndexedRandom;
 
 use crate::domain::Domain;
 use crate::error::InboxCreationError;
@@ -11,14 +12,55 @@ mod mail_tm;
 mod muellmail;
 
 #[async_trait::async_trait]
-pub(crate) trait Provider {
-    async fn new_inbox(
+pub(crate) trait Provider: Send + Sync {
+    async fn new_random_inbox(&mut self) -> Result<Inbox, InboxCreationError> {
+        let domain = self
+            .get_domains()
+            .choose(&mut rand::rng())
+            .expect("No domains available")
+            .clone();
+
+        self.new_random_inbox_from_domain(domain).await
+    }
+
+    async fn new_random_inbox_from_domain(
         &mut self,
-        name: Option<&str>,
-        domain: Option<Domain>,
-    ) -> Result<Inbox, InboxCreationError>;
+        domain: Domain,
+    ) -> Result<Inbox, InboxCreationError> {
+        if !self.get_domains().contains(&domain) {
+            return Err(InboxCreationError::InvalidDomainForProvider(
+                domain.to_string(),
+                self.get_provider_type(),
+            ));
+        }
+        let name = Alphanumeric.sample_string(&mut rand::rng(), 8);
+        self.new_inbox_from_email(EmailAddress::new(name, domain))
+            .await
+    }
+
+    async fn new_random_inbox_from_name(
+        &mut self,
+        name: &str,
+    ) -> Result<Inbox, InboxCreationError> {
+        let domain = self
+            .get_domains()
+            .choose(&mut rand::rng())
+            .expect("No domains available")
+            .clone();
+
+        self.new_inbox_from_email(EmailAddress::new(name.into(), domain))
+            .await
+    }
+
+    async fn new_inbox_from_email(
+        &mut self,
+        _email: EmailAddress,
+    ) -> Result<Inbox, InboxCreationError> {
+        Err(InboxCreationError::ProviderNotImplemented)
+    }
 
     fn get_domains(&self) -> Vec<Domain>;
+    fn get_provider_type(&self) -> ProviderType;
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

@@ -1,11 +1,9 @@
 use crate::domain::Domain;
 use crate::email::EmailAddress;
 use crate::error::{InboxCreationError, InboxError};
-use rand::distr::{Alphanumeric, SampleString};
 use rquest::{Client, Impersonate};
 
 use super::{Inbox, MessageFetcher, Provider};
-use rand::seq::IndexedRandom;
 
 pub(crate) struct MuellmailProvider {}
 
@@ -69,22 +67,10 @@ impl MuellmailProvider {
 
 #[async_trait::async_trait]
 impl Provider for MuellmailProvider {
-    async fn new_inbox(
+    async fn new_inbox_from_email(
         &mut self,
-        name: Option<&str>,
-        domain: Option<Domain>,
+        email: EmailAddress,
     ) -> Result<Inbox, InboxCreationError> {
-        let domain = domain.unwrap_or_else(|| {
-            self.get_domains()
-                .choose(&mut rand::rng())
-                .expect("No domains available")
-                .clone()
-        });
-        let name = name
-            .map(ToString::to_string)
-            .unwrap_or_else(|| Alphanumeric.sample_string(&mut rand::rng(), 8));
-        let email = EmailAddress::new(name, domain);
-
         let client = Client::builder()
             .cookie_store(true)
             .impersonate(Impersonate::Firefox135)
@@ -122,6 +108,10 @@ impl Provider for MuellmailProvider {
             message_fetcher: Box::new(MuellmailMessageFetcher { client }),
             email_address: email,
         })
+    }
+
+    fn get_provider_type(&self) -> crate::provider::ProviderType {
+        crate::provider::ProviderType::Muellmail
     }
 
     fn get_domains(&self) -> Vec<Domain> {

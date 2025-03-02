@@ -1,4 +1,6 @@
-use crate::{domain::Domain, error::InboxCreationError, provider::ProviderType, Inbox};
+use crate::{
+    domain::Domain, error::InboxCreationError, provider::ProviderType, EmailAddress, Inbox,
+};
 
 pub struct TempMail {
     provider_type: Option<ProviderType>,
@@ -45,20 +47,22 @@ impl TempMail {
                             .get_domains()
                             .contains(&self.domain.unwrap())
                     })
-                    .ok_or(InboxCreationError::InvalidDomain(
+                    .ok_or(InboxCreationError::NoProviderForDomain(
                         self.domain.unwrap().to_string(),
                     ))?
             }
         };
         let mut provider = provider_type.get_provider();
-        if let Some(domain) = self.domain {
-            if !provider.get_domains().contains(&domain) {
-                return Err(InboxCreationError::InvalidDomainForProvider(
-                    domain.to_string(),
-                    provider_type,
-                ));
+
+        match (self.name, self.domain) {
+            (Some(name), Some(domain)) => {
+                provider
+                    .new_inbox_from_email(EmailAddress::new(name, domain))
+                    .await
             }
+            (Some(name), None) => provider.new_random_inbox_from_name(&name).await,
+            (None, Some(domain)) => provider.new_random_inbox_from_domain(domain).await,
+            (None, None) => provider.new_random_inbox().await,
         }
-        provider.new_inbox(self.name.as_deref(), self.domain).await
     }
 }
