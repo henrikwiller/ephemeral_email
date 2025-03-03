@@ -6,6 +6,7 @@ Ephemeral Email is a Rust library for creating and managing temporary email addr
 - Create temporary email addresses
 - Fetch messages from temporary inboxes
 - Supports multiple email providers
+- 42 domains supported
 
 ## Email Providers
 Here are some email providers you can use for temporary email addresses:
@@ -31,7 +32,8 @@ async fn main() {
         .provider_type(ProviderType::Muellmail)
         .name("test")
         .create_inbox()
-        .await?;
+        .await
+        .unwrap();
     println!("Created inbox with email: {}", inbox.get_email_address());
     let messages = inbox.get_messages().await.unwrap();
     println!("Got {} messages:", messages.len());
@@ -46,6 +48,3 @@ async fn main() {
 Check out these related crates:
 - [tempmail-lol](https://github.com/Morb0/tempmail-lol)
 - [tmail](https://github.com/atifyushri/tmail)
-
-## License
-This project is licensed under the MIT License.

@@ -2,11 +2,13 @@ use rquest::StatusCode;
 
 use crate::provider::ProviderType;
 
+/// Represents an error that can occur when creating a temporary email inbox.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum InboxCreationError {
     #[error("Request error: {0}")]
     RquestError(#[from] rquest::Error),
+    /// A generic error that occurred when creating an inbox.
     #[error("Cannot create inbox: {0}")]
     CreationError(String),
     #[error("Provider not implemented")]
@@ -25,6 +27,7 @@ pub enum InboxCreationError {
     InvalidEmailAddress(#[from] EmailAddressError),
 }
 
+/// Represents an error that can occur when fetching a message from an inbox.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum MessageFetcherError {
@@ -32,10 +35,12 @@ pub enum MessageFetcherError {
     RquestError(#[from] rquest::Error),
     #[error("Invalid response status: {0}")]
     InvalidResponseStatus(StatusCode),
+    /// A generic error that occurred when fetching a message.
     #[error("Failed to fetch message: {0}")]
     FetchError(String),
 }
 
+/// Represents an error that can occur when parsing an email address.
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
 pub enum EmailAddressError {

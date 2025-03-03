@@ -5,10 +5,15 @@ use std::{
 
 use crate::{domain::Domain, error::EmailAddressError};
 
+/// Represents an email message with a sender, subject, and body.
+/// The body can be plain text or HTML.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Message {
+    /// The sender of the email message.
     pub from: String,
+    /// The subject of the email message.
     pub subject: String,
+    /// The main content of the email, which can be plain text or HTML.
     pub body: String,
 }
 

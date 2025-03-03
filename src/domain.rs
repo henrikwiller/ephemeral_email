@@ -1,50 +1,112 @@
 use std::fmt::{self, Display, Formatter};
 
+/// The email domain to use for the temporary email address.
+///
+/// This is an enum with all possible domains. To use a custom domain, use the `Custom` variant.
+///
+/// # Example
+/// ```
+/// use ephemeral_email::Domain;
+///
+/// let domain = Domain::TenMinMailDe;
+/// assert_eq!("10minmail.de", domain.to_string());
+///
+/// let domain: Domain = "10minmail.de".into();
+/// assert_eq!(Domain::TenMinMailDe, domain);
+///
+/// let domain = Domain::Custom("example.com".to_string());
+/// assert_eq!("example.com", domain.to_string());
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum Domain {
+    /// A custom domain, represented by any valid domain string.
+    /// This variant is used when the domain is not one of the predefined options.
+    /// Some providers support custom domains or subdomains.
     Custom(String),
+    /// The 10minmail.de domain.
     TenMinMailDe,
+    /// The 10minutenmail.xyz domain.
     TenMinutenMailXyz,
+    /// The existiert.net domain.
     ExistiertNet,
+    /// The fliegender.fish domain.
     FliegenderFish,
+    /// The jaga.email domain.
     JagaEmail,
+    /// The mdz.email domain.
     MdzEmail,
+    /// The muellmail.com domain.
     MuellMailCom,
+    /// The muellemail.com domain.
     MuelleMailCom,
+    /// The muell.monster domain.
     MuellMonster,
+    /// The muell.icu domain.
     MuellIcu,
+    /// The muell.io domain.
     MuellIo,
+    /// The muell.xyz domain.
     MuellXyz,
+    /// The magspam.net domain.
     MagSpamNet,
+    /// The fukaru.com domain.
     FukaruCom,
+    /// The oida.icu domain.
     OidaIcu,
+    /// The papierkorb.me domain.
     PapierkorbMe,
+    /// The spam.care domain.
     SpamCare,
+    /// The tonne.to domain.
     TonneTo,
+    /// The ultra.fyi domain.
     UltraFyi,
+    /// The wegwerfemail.de domain.
     WegwerfEmailDe,
+    /// The dsgvo.party domain.
     DsgvoParty,
+    /// The knickerbockerban.de domain.
     KnickerbockerbanDe,
+    /// The lambsauce.de domain.
     LambsauceDe,
+    /// The ramenmail.de domain.
     RamenMailDe,
+    /// The ji5.de domain.
     Ji5De,
+    /// The ji6.de domain.
     Ji6De,
+    /// The ji7.de domain.
     Ji7De,
+    /// The sudern.de domain.
     SudernDe,
+    /// The hihi.lol domain.
     HihiLol,
+    /// The kein.date domain.
     KeinDate,
+    /// The holio.day domain.
     HolioDay,
+    /// The corn.holio.day domain.
     CornHolioDay,
+    /// The bung.holio.day domain.
     BungHolioDay,
+    /// The stacys.mom domain.
     StacysMom,
+    /// The edny.net domain.
     EdnyNet,
+    /// The filesaved.org domain.
     FileSavedOrg,
+    /// The terriblecoffee.org domain.
     TerribleCoffeeOrg,
+    /// The underseagolf.com domain.
     UnderseaGolfCom,
+    /// The jailbreakeverything.com domain.
     JailBreakEverythingCom,
+    /// The awesome47.com domain.
     Awesome47,
+    /// The expiredtoaster.org domain.
     ExpiredToasterOrg,
+    /// The undeadbank.com domain.
     UndeadBankCom,
 }
 

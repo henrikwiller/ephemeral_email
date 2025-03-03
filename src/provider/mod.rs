@@ -65,12 +65,19 @@ pub(crate) trait Provider: Send + Sync {
     }
 }
 
+/// The type of provider to use.
+///
+/// This enum is non-exhaustive, additional variants may be added in the future.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum ProviderType {
+    /// The FakeMail.net provider.
     FakeMailNet,
+    /// The Mail.tm provider.
     MailTm,
+    /// The Muellmail.com provider.
     Muellmail,
+    /// The TempMail.lol provider.
     TempMailLol,
 }
 
@@ -118,16 +125,68 @@ pub trait MessageFetcher: Send + Sync {
     async fn fetch_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError>;
 }
 
+/// Represents an email inbox with the ability to fetch messages.
+///
+/// The `Inbox` struct holds an email address and a message fetcher that can be used to retrieve
+/// messages asynchronously.
+///
+/// # Methods
+///
+/// * `get_email_address` - Returns a reference to the email address associated with this inbox.
+/// * `get_messages` - Asynchronously fetches messages from the inbox.
+///
+/// # Examples
+///
+/// ```no_run
+/// use ephemeral_email::Inbox;
+///
+/// async fn example(inbox: Inbox) {
+///     let email_address = inbox.get_email_address();
+///     println!("Email address: {}", email_address);
+///
+///     match inbox.get_messages().await {
+///         Ok(messages) => {
+///             for message in messages {
+///                 println!("Message: {:?}", message);
+///             }
+///         }
+///         Err(e) => println!("Failed to fetch messages: {:?}", e),
+///     }
+/// }
+/// ```
 pub struct Inbox {
     message_fetcher: Arc<Mutex<dyn MessageFetcher>>,
     email_address: EmailAddress,
 }
 
 impl Inbox {
+    /// Returns a reference to the email address associated with this inbox.
     pub fn get_email_address(&self) -> &EmailAddress {
         &self.email_address
     }
 
+    /// Asynchronously fetches messages from the inbox.
+    ///
+    /// Returns a vector of [`Message`] structs. If an error occurs while fetching the messages,
+    /// a [`MessageFetcherError`] is returned. The content of the messages may be plain text or HTML,
+    /// depending on the provider.
+    ///
+    /// # Examples
+    ///
+    /// ```no_run
+    /// use ephemeral_email::Inbox;
+    ///
+    /// async fn example(inbox: Inbox) {
+    ///     match inbox.get_messages().await {
+    ///         Ok(messages) => {
+    ///             for message in messages {
+    ///                 println!("Message: {:?}", message);
+    ///             }
+    ///         }
+    ///         Err(e) => println!("Failed to fetch messages: {:?}", e),
+    ///     }
+    /// }
+    /// ```
     pub async fn get_messages(&self) -> Result<Vec<Message>, MessageFetcherError> {
         self.message_fetcher.lock().await.fetch_messages().await
     }
