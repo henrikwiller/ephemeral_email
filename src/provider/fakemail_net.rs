@@ -103,10 +103,9 @@ impl Provider for FakeMailNetProvider {
             .text()
             .await?;
         let response = response.trim();
-        let index_response: IndexResponse =
-            serde_json::from_str(&response.trim()).map_err(|e| {
-                InboxCreationError::CreationError(format!("Failed to parse JSON: {}", e))
-            })?;
+        let index_response: IndexResponse = serde_json::from_str(response.trim()).map_err(|e| {
+            InboxCreationError::CreationError(format!("Failed to parse JSON: {}", e))
+        })?;
         Ok(Inbox {
             message_fetcher: Arc::new(Mutex::new(FakeMailNetMessageFetcher { client })),
             email_address: index_response.email.parse()?,
@@ -133,7 +132,7 @@ impl super::MessageFetcher for FakeMailNetMessageFetcher {
             .await?
             .text()
             .await?;
-        let email_list: Vec<EmailListEntry> = serde_json::from_str(&email_list_response.trim())
+        let email_list: Vec<EmailListEntry> = serde_json::from_str(email_list_response.trim())
             .map_err(|e| MessageFetcherError::FetchError(format!("Failed to parse JSON: {}", e)))?;
 
         let mut messages = Vec::new();

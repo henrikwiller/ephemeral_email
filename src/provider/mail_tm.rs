@@ -179,7 +179,7 @@ impl MessageFetcher for MailTmMessageFetcher {
         for email in email_list {
             let email: Email = self
                 .client
-                .get(&format!("https://api.mail.tm/messages/{}", email.id))
+                .get(format!("https://api.mail.tm/messages/{}", email.id))
                 .header("ACCEPT", "application/json")
                 .send()
                 .await?

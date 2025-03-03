@@ -89,8 +89,8 @@ impl TempMail {
         let mut provider = provider_type.get_provider();
 
         if let Some(ref domain) = self.domain {
-            if !provider.get_domains().contains(domain)
-                && !(provider.support_custom_domains() && matches!(domain, Domain::Custom(_)))
+            if !(provider.get_domains().contains(domain)
+                || provider.support_custom_domains() && matches!(domain, Domain::Custom(_)))
             {
                 return Err(InboxCreationError::InvalidDomainForProvider(
                     domain.to_string(),
