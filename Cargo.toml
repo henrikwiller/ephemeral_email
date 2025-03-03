@@ -9,6 +9,7 @@ readme = "README.md"
 
 [dependencies]
 async-trait = "0.1.86"
+futures = "0.3.31"
 rand = "0.9.0"
 rquest = { version = "2.2.1", features = ["cookies", "json"] }
 serde = { version = "1.0.218", features = ["derive"] }

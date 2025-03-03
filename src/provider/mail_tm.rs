@@ -1,3 +1,6 @@
+use std::sync::Arc;
+
+use futures::lock::Mutex;
 use rquest::{header::HeaderValue, Client};
 use serde_json::json;
 
@@ -100,7 +103,7 @@ impl Provider for MailTmProvider {
                 HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
             );
             return Ok(Inbox {
-                message_fetcher: Box::new(MailTmMessageFetcher { client }),
+                message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client })),
                 email_address: email,
             });
         }
@@ -146,7 +149,7 @@ impl Provider for MailTmProvider {
             HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
         );
         Ok(Inbox {
-            message_fetcher: Box::new(MailTmMessageFetcher { client }),
+            message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client })),
             email_address: email,
         })
     }

@@ -27,7 +27,7 @@ use ephemeral_email::{ProviderType, TempMail};
 
 #[tokio::main]
 async fn main() {
-    let mut inbox = TempMail::new()
+    let inbox = TempMail::new()
         .provider_type(ProviderType::Muellmail)
         .name("test")
         .create_inbox()

@@ -1,5 +1,7 @@
 use std::fmt::{self, Display, Formatter};
+use std::sync::Arc;
 
+use futures::lock::Mutex;
 use muellmail::MuellmailProvider;
 use rand::distr::{Alphanumeric, Distribution, SampleString, StandardUniform};
 use rand::seq::IndexedRandom;
@@ -117,7 +119,7 @@ pub trait MessageFetcher: Send + Sync {
 }
 
 pub struct Inbox {
-    message_fetcher: Box<dyn MessageFetcher>,
+    message_fetcher: Arc<Mutex<dyn MessageFetcher>>,
     email_address: EmailAddress,
 }
 
@@ -126,7 +128,7 @@ impl Inbox {
         &self.email_address
     }
 
-    pub async fn get_messages(&mut self) -> Result<Vec<Message>, MessageFetcherError> {
-        self.message_fetcher.fetch_messages().await
+    pub async fn get_messages(&self) -> Result<Vec<Message>, MessageFetcherError> {
+        self.message_fetcher.lock().await.fetch_messages().await
     }
 }

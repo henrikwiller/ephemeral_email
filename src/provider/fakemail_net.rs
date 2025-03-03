@@ -1,5 +1,6 @@
-use std::vec;
+use std::{sync::Arc, vec};
 
+use futures::lock::Mutex;
 use rquest::Client;
 
 use crate::{Domain, EmailAddress, InboxCreationError, Message, MessageFetcherError};
@@ -107,7 +108,7 @@ impl Provider for FakeMailNetProvider {
                 InboxCreationError::CreationError(format!("Failed to parse JSON: {}", e))
             })?;
         Ok(Inbox {
-            message_fetcher: Box::new(FakeMailNetMessageFetcher { client }),
+            message_fetcher: Arc::new(Mutex::new(FakeMailNetMessageFetcher { client })),
             email_address: index_response.email.parse()?,
         })
     }

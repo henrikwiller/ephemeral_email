@@ -1,3 +1,6 @@
+use std::sync::Arc;
+
+use futures::lock::Mutex;
 use rquest::Client;
 use serde_json::json;
 
@@ -71,10 +74,10 @@ impl Provider for TempMailLolProvider {
 
         let inbox: InboxResponse = response.json().await?;
         Ok(Inbox {
-            message_fetcher: Box::new(TempMailLolMessageFetcher {
+            message_fetcher: Arc::new(Mutex::new(TempMailLolMessageFetcher {
                 client,
                 token: inbox.token,
-            }),
+            })),
             email_address: inbox.address.parse()?,
         })
     }
@@ -99,10 +102,10 @@ impl Provider for TempMailLolProvider {
 
         let inbox: InboxResponse = response.json().await?;
         Ok(Inbox {
-            message_fetcher: Box::new(TempMailLolMessageFetcher {
+            message_fetcher: Arc::new(Mutex::new(TempMailLolMessageFetcher {
                 client,
                 token: inbox.token,
-            }),
+            })),
             email_address: inbox.address.parse()?,
         })
     }

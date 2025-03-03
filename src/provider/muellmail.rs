@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use crate::domain::Domain;
 use crate::email::EmailAddress;
 use crate::error::{InboxCreationError, MessageFetcherError};
 use crate::Message;
+use futures::lock::Mutex;
 use rquest::{Client, Impersonate};
 
 use super::{Inbox, MessageFetcher, Provider};
@@ -104,7 +107,7 @@ impl Provider for MuellmailProvider {
         }
 
         Ok(Inbox {
-            message_fetcher: Box::new(MuellmailMessageFetcher { client }),
+            message_fetcher: Arc::new(Mutex::new(MuellmailMessageFetcher { client })),
             email_address: email,
         })
     }
