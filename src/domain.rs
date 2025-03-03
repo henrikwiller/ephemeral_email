@@ -221,3 +221,29 @@ impl From<&str> for Domain {
         Domain::Custom(value.to_string())
     }
 }
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_domain_from_str() {
+        assert_eq!(Domain::from("10minmail.de"), Domain::TenMinMailDe);
+        assert_eq!(Domain::from("10minutenmail.xyz"), Domain::TenMinutenMailXyz);
+        assert_eq!(Domain::from("existiert.net"), Domain::ExistiertNet);
+        assert_eq!(
+            Domain::from("custom.com"),
+            Domain::Custom("custom.com".to_string())
+        );
+    }
+
+    #[test]
+    fn test_domain_to_string() {
+        assert_eq!(Domain::TenMinMailDe.to_string(), "10minmail.de");
+        assert_eq!(Domain::TenMinutenMailXyz.to_string(), "10minutenmail.xyz");
+        assert_eq!(Domain::ExistiertNet.to_string(), "existiert.net");
+        assert_eq!(
+            Domain::Custom("custom.com".to_string()).to_string(),
+            "custom.com"
+        );
+    }
+}
