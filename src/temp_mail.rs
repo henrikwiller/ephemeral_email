@@ -1,5 +1,6 @@
 use crate::{domain::Domain, error::InboxCreationError, provider::ProviderType, Inbox};
 
+#[derive(Debug, Clone, Default)]
 pub struct TempMail {
     provider_type: Option<ProviderType>,
     domain: Option<Domain>,
@@ -8,11 +9,7 @@ pub struct TempMail {
 
 impl TempMail {
     pub fn new() -> Self {
-        Self {
-            provider_type: None,
-            domain: None,
-            name: None,
-        }
+        Self::default()
     }
 
     pub fn provider_type(mut self, provider_type: ProviderType) -> Self {

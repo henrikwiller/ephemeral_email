@@ -5,7 +5,7 @@ use std::{
 
 use crate::{domain::Domain, error::EmailAddressError};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Message {
     pub from: String,
     pub subject: String,
