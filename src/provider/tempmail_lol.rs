@@ -110,6 +110,19 @@ impl Provider for TempMailLolProvider {
         })
     }
 
+    fn get_domains(&self) -> Vec<Domain> {
+        vec![
+            Domain::TerribleCoffeeOrg,
+            Domain::UnderseaGolfCom,
+            Domain::JailBreakEverythingCom,
+            Domain::Awesome47,
+            Domain::ExpiredToasterOrg,
+            Domain::UndeadBankCom,
+        ]
+    }
+    fn get_random_domain(&self) -> Result<Domain, InboxCreationError> {
+        Err(InboxCreationError::DomainNotSupported)
+    }
     fn get_provider_type(&self) -> ProviderType {
         ProviderType::TempMailLol
     }

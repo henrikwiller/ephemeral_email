@@ -83,7 +83,7 @@
       ...
     }: {
       default = pkgs.mkShell {
-        packages = [self.packages.${system}.rustToolchain];
+        packages = [self.packages.${system}.rustToolchain pkgs.bacon];
         inputsFrom = [self.packages.${system}.default.devShell];
         RUST_SRC_PATH = "${self.packages.${system}.rustToolchain}/lib/rustlib/src/rust/library";
         LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";

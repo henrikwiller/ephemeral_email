@@ -40,6 +40,12 @@ pub enum Domain {
     StacysMom,
     EdnyNet,
     FileSavedOrg,
+    TerribleCoffeeOrg,
+    UnderseaGolfCom,
+    JailBreakEverythingCom,
+    Awesome47,
+    ExpiredToasterOrg,
+    UndeadBankCom,
 }
 
 impl Domain {
@@ -81,6 +87,12 @@ impl Domain {
             Domain::StacysMom,
             Domain::EdnyNet,
             Domain::FileSavedOrg,
+            Domain::TerribleCoffeeOrg,
+            Domain::UnderseaGolfCom,
+            Domain::JailBreakEverythingCom,
+            Domain::Awesome47,
+            Domain::ExpiredToasterOrg,
+            Domain::UndeadBankCom,
         ]
     }
 }
@@ -125,6 +137,12 @@ impl Display for Domain {
             Domain::StacysMom => write!(f, "stacys.mom"),
             Domain::EdnyNet => write!(f, "edny.net"),
             Domain::FileSavedOrg => write!(f, "filesaved.org"),
+            Domain::TerribleCoffeeOrg => write!(f, "terriblecoffee.org"),
+            Domain::UnderseaGolfCom => write!(f, "underseagolf.com"),
+            Domain::JailBreakEverythingCom => write!(f, "jailbreakeverything.com"),
+            Domain::Awesome47 => write!(f, "awesome47.com"),
+            Domain::ExpiredToasterOrg => write!(f, "expiredtoaster.org"),
+            Domain::UndeadBankCom => write!(f, "undeadbank.com"),
         }
     }
 }
