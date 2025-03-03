@@ -24,6 +24,11 @@ This library is not affiliated with, endorsed by, or associated with the email p
 
 ## Usage
 
+`ephemeral_email` uses [rquest] to simulate browser behavior, making it incompatible with crates that depend on `openssl-sys`, such as [reqwest]. Ensure you use [rquest] instead of [reqwest]. For any build issues, consult the [rquest documentation](https://github.com/0x676e67/rquest#building).
+
+[rquest]: https://github.com/0x676e67/rquest
+[reqwest]: https://github.com/seanmonstar/reqwest
+
 Add the following to your `Cargo.toml`:
 
 ```toml
