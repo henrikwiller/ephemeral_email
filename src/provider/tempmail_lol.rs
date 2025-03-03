@@ -36,9 +36,9 @@ struct Email {
 impl From<Email> for Message {
     fn from(email: Email) -> Self {
         Self {
-            from: Some(email.from),
-            subject: Some(email.subject),
-            body: Some(email.body),
+            from: email.from,
+            subject: email.subject,
+            body: email.body,
         }
     }
 }

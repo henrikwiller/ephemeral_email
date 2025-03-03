@@ -53,9 +53,9 @@ struct LoginResponse {
 impl From<Email> for crate::email::Message {
     fn from(email: Email) -> Self {
         Self {
-            from: Some(email.from.address),
-            subject: Some(email.subject),
-            body: Some(email.text),
+            from: email.from.address,
+            subject: email.subject,
+            body: email.text,
         }
     }
 }

@@ -7,9 +7,9 @@ use crate::{domain::Domain, error::EmailAddressError};
 
 #[derive(Debug)]
 pub struct Message {
-    pub from: Option<String>,
-    pub subject: Option<String>,
-    pub body: Option<String>,
+    pub from: String,
+    pub subject: String,
+    pub body: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]

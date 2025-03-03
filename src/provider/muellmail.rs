@@ -53,9 +53,9 @@ struct Email {
 impl From<Email> for crate::email::Message {
     fn from(email: Email) -> Self {
         Self {
-            from: Some(email.sender),
-            subject: Some(email.subject),
-            body: email.text,
+            from: email.sender,
+            subject: email.subject,
+            body: email.text.or(email.html).unwrap_or_default(),
         }
     }
 }

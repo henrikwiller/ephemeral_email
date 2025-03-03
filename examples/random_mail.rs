@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
     let messages = inbox.get_messages().await?;
     println!("Got {} messages:", messages.len());
     for message in messages {
-        println!("From: {}", message.from.unwrap());
+        println!("From: {}", message.from);
     }
     Ok(())
 }

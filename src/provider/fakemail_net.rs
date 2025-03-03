@@ -146,9 +146,9 @@ impl super::MessageFetcher for FakeMailNetMessageFetcher {
                 .text()
                 .await?;
             messages.push(Message {
-                from: Some(email.from.clone()),
-                subject: Some(email.subject.clone()),
-                body: Some(email_content),
+                from: email.from.clone(),
+                subject: email.subject.clone(),
+                body: email_content,
             });
         }
         Ok(messages)
