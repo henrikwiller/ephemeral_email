@@ -39,6 +39,7 @@ pub enum Domain {
     BungHolioDay,
     StacysMom,
     EdnyNet,
+    FileSavedOrg,
 }
 
 impl Domain {
@@ -79,6 +80,7 @@ impl Domain {
             Domain::BungHolioDay,
             Domain::StacysMom,
             Domain::EdnyNet,
+            Domain::FileSavedOrg,
         ]
     }
 }
@@ -122,6 +124,7 @@ impl Display for Domain {
             Domain::BungHolioDay => write!(f, "bung.holio.day"),
             Domain::StacysMom => write!(f, "stacys.mom"),
             Domain::EdnyNet => write!(f, "edny.net"),
+            Domain::FileSavedOrg => write!(f, "filesaved.org"),
         }
     }
 }

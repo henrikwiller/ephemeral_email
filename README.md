@@ -12,6 +12,7 @@ Here are some email providers you can use for temporary email addresses:
 - [Mail.tm](https://mail.tm)
 - [Muellmail.com](https://muellmail.com)
 - [TempMail.lol](https://tempmail.lol)
+- [FakeMail.net](https://fakemail.net)
 
 ## Usage
 Add the following to your `Cargo.toml`:

@@ -32,6 +32,8 @@ pub enum MessageFetcherError {
     RquestError(#[from] rquest::Error),
     #[error("Invalid response status: {0}")]
     InvalidResponseStatus(StatusCode),
+    #[error("Failed to fetch message: {0}")]
+    FetchError(String),
 }
 
 #[derive(Debug, thiserror::Error)]

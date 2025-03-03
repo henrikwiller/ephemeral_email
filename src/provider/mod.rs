@@ -8,6 +8,7 @@ use crate::domain::Domain;
 use crate::error::InboxCreationError;
 use crate::{EmailAddress, Message, MessageFetcherError};
 
+mod fakemail_net;
 mod mail_tm;
 mod muellmail;
 mod tempmail_lol;
@@ -65,6 +66,7 @@ pub(crate) trait Provider: Send + Sync {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[non_exhaustive]
 pub enum ProviderType {
+    FakeMailNet,
     MailTm,
     Muellmail,
     TempMailLol,
@@ -73,6 +75,7 @@ pub enum ProviderType {
 impl ProviderType {
     pub(crate) fn get_provider(&self) -> Box<dyn Provider> {
         match self {
+            ProviderType::FakeMailNet => Box::new(fakemail_net::FakeMailNetProvider::new()),
             ProviderType::MailTm => Box::new(mail_tm::MailTmProvider::new()),
             ProviderType::Muellmail => Box::new(MuellmailProvider::new()),
             ProviderType::TempMailLol => Box::new(tempmail_lol::TempMailLolProvider::new()),
@@ -81,6 +84,7 @@ impl ProviderType {
 
     pub(crate) fn get_all_providers() -> Vec<ProviderType> {
         vec![
+            ProviderType::FakeMailNet,
             ProviderType::MailTm,
             ProviderType::Muellmail,
             ProviderType::TempMailLol,
@@ -91,6 +95,7 @@ impl ProviderType {
 impl Display for ProviderType {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         match self {
+            ProviderType::FakeMailNet => write!(f, "FakeMail.net"),
             ProviderType::MailTm => write!(f, "Mail.tm"),
             ProviderType::Muellmail => write!(f, "Muellmail"),
             ProviderType::TempMailLol => write!(f, "TempMail.lol"),
