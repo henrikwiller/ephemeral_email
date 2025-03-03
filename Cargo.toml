@@ -7,6 +7,13 @@ edition = "2021"
 description = "A Rust library for generating temporary email addresses."
 readme = "README.md"
 
+authors = ["Henrik Willer <crates.io@hwiller.com>"]
+
+repository = "https://github.com/henrikwiller/ephemeral_email"
+
+keywords = ["email", "temporary", "disposable", "tempmail", "automation"]
+categories = ["email", "api-bindings"]
+
 [dependencies]
 async-trait = "0.1.86"
 futures = "0.3.31"
