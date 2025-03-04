@@ -1,15 +1,13 @@
 [package]
 name = "ephemeral_email"
 version = "0.1.0"
-license = "MIT"
 edition = "2021"
+license = "MIT"
 
+authors = ["Henrik Willer <crates.io@hwiller.com>"]
 description = "A Rust library for generating temporary email addresses."
 readme = "README.md"
 documentation = "https://docs.rs/ephemeral_email"
-
-authors = ["Henrik Willer <crates.io@hwiller.com>"]
-
 repository = "https://github.com/henrikwiller/ephemeral_email"
 
 keywords = ["email", "temporary", "disposable", "tempmail", "automation"]
