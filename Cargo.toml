@@ -6,6 +6,7 @@ edition = "2021"
 
 description = "A Rust library for generating temporary email addresses."
 readme = "README.md"
+documentation = "https://docs.rs/ephemeral_email"
 
 authors = ["Henrik Willer <crates.io@hwiller.com>"]
 
