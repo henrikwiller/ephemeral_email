@@ -44,15 +44,13 @@
           ];
         };
       };
-      devShells = {
-        default = pkgs.mkShell {
+      devShells.default = pkgs.mkShell {
           packages = [
             pkgs.bacon
           ];
           inputsFrom = [
             self.packages.${system}.default.devShell
           ];
-        };
       };
     });
 }
