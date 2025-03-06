@@ -5,7 +5,8 @@ use crate::email::EmailAddress;
 use crate::error::{InboxCreationError, MessageFetcherError};
 use crate::Message;
 use futures::lock::Mutex;
-use rquest::{Client, Impersonate};
+use rquest::Client;
+use rquest_util::Emulation;
 
 use super::{Inbox, MessageFetcher, Provider};
 
@@ -75,7 +76,7 @@ impl Provider for MuellmailProvider {
         let email = EmailAddress::new(name, domain);
         let client = Client::builder()
             .cookie_store(true)
-            .impersonate(Impersonate::Firefox135)
+            .emulation(Emulation::Firefox135)
             .build()?;
 
         let csrf_token: CsrfResponse = client

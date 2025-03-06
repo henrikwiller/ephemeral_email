@@ -24,8 +24,8 @@ reqwest = { version = "0.12.12", features = [
     "cookies",
     "json",
 ], optional = true }
-rquest = { version = "2.2.1", features = ["cookies", "json"], optional = true }
-
+rquest = { version = "3.0.1", features = ["cookies", "json"], optional = true }
+rquest-util = { version = "0.2.0", optional = true }
 
 [dev-dependencies]
 anyhow = "1.0.96"
@@ -34,7 +34,7 @@ tokio = { version = "1.43.0", features = ["full"] }
 [features]
 default = ["use-reqwest"]
 use-reqwest = ["dep:reqwest"]
-use-rquest = ["dep:rquest"]
+use-rquest = ["dep:rquest", "dep:rquest-util"]
 
 [[example]]
 name = "random_mail"
