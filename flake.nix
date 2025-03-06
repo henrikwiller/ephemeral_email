@@ -1,5 +1,5 @@
 {
-  description = "Build a cargo project";
+  description = "A Rust library for generating temporary email addresses.";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
@@ -45,12 +45,12 @@
         };
       };
       devShells.default = pkgs.mkShell {
-          packages = [
-            pkgs.bacon
-          ];
-          inputsFrom = [
-            self.packages.${system}.default.devShell
-          ];
+        packages = [
+          pkgs.bacon
+        ];
+        inputsFrom = [
+          self.packages.${system}.default.devShell
+        ];
       };
     });
 }
