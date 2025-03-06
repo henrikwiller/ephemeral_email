@@ -24,11 +24,6 @@ This library is not affiliated with, endorsed by, or associated with the email p
 
 ## Usage
 
-`ephemeral_email` uses [rquest] to simulate browser behavior, making it incompatible with crates that depend on `openssl-sys`, such as [reqwest]. Ensure you use [rquest] instead of [reqwest]. For any build issues, consult the [rquest documentation](https://github.com/0x676e67/rquest#building).
-
-[rquest]: https://github.com/0x676e67/rquest
-[reqwest]: https://github.com/seanmonstar/reqwest
-
 Add the following to your `Cargo.toml`:
 
 ```toml
@@ -57,6 +52,18 @@ async fn main() {
     }
 }
 ```
+
+## Rquest
+
+By default, `ephemeral_email` uses [reqwest] for making web requests. However, providers that use Cloudflare cannot be accessed this way. To support these providers, `ephemeral_email` can use [rquest] to emulate browsers like Chrome or Firefox. This feature is gated behind a feature flag. Note that [rquest] is incompatible with crates that depend on `openssl-sys`, such as [reqwest]. To use [rquest], enable the `use-rquest` feature flag and disable the default `use-reqwest` feature. For build issues, refer to the [rquest documentation](https://github.com/0x676e67/rquest#building).
+
+```toml
+[dependencies]
+ephemeral_email = { version = "0.1", default-features = false, features = ["use-rquest"] }
+```
+
+[rquest]: https://github.com/0x676e67/rquest
+[reqwest]: https://github.com/seanmonstar/reqwest
 
 ## Related Crates
 
