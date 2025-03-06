@@ -54,6 +54,14 @@ struct LoginResponse {
     token: String,
 }
 
+#[derive(serde::Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DomainResponse {
+    domain: String,
+    is_private: bool,
+    is_active: bool,
+}
+
 impl From<Email> for crate::email::Message {
     fn from(email: Email) -> Self {
         Self {
@@ -94,10 +102,32 @@ async fn try_login(client: &Client, email: &EmailAddress) -> Result<String, Inbo
 
 #[async_trait::async_trait]
 impl Provider for MailTmProvider {
-    async fn new_inbox(&mut self, name: &str, domain: Domain) -> Result<Inbox, InboxCreationError> {
-        let email = EmailAddress::new(name, domain);
+    async fn new_random_inbox_from_name(
+        &mut self,
+        name: &str,
+    ) -> Result<Inbox, InboxCreationError> {
         let client = Client::builder().cookie_store(true).build()?;
+        let name = name.to_ascii_lowercase();
 
+        let domain_response: Vec<DomainResponse> = client
+            .get("https://api.mail.tm/domains")
+            .header("ACCEPT", "application/json")
+            .send()
+            .await?
+            .json()
+            .await?;
+        let Some(domain) = domain_response
+            .iter()
+            .filter(|d| !d.is_private && d.is_active)
+            .next()
+        else {
+            return Err(InboxCreationError::CreationError(
+                "No active domain found".to_string(),
+            ));
+        };
+        let domain = Domain::from(domain.domain.as_str());
+
+        let email = EmailAddress::new(name, domain);
         if let Ok(token) = try_login(&client, &email).await {
             return Ok(Inbox {
                 message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client, token })),
@@ -115,6 +145,9 @@ impl Provider for MailTmProvider {
             .send()
             .await?;
         if !login_response.status().is_success() {
+            if login_response.status() == 429 {
+                return Err(InboxCreationError::RateLimited);
+            }
             let violation: Violation = login_response.json().await?;
             if violation.status == 422 && violation.violations.len() == 1 {
                 let violation = &violation.violations[0];
@@ -152,7 +185,7 @@ impl Provider for MailTmProvider {
     }
 
     fn get_domains(&self) -> Vec<Domain> {
-        vec![Domain::EdnyNet]
+        vec![]
     }
 }
 

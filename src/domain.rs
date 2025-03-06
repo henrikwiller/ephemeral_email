@@ -129,10 +129,6 @@ pub enum Domain {
     #[cfg(feature = "use-rquest")]
     StacysMom,
 
-    // Domains from MailTm
-    /// The edny.net domain.
-    EdnyNet,
-
     // Domains from FakeMailNet
     /// The filesaved.org domain.
     FileSavedOrg,
@@ -223,7 +219,6 @@ impl Domain {
             Domain::BungHolioDay,
             #[cfg(feature = "use-rquest")]
             Domain::StacysMom,
-            Domain::EdnyNet,
             Domain::FileSavedOrg,
             Domain::TerribleCoffeeOrg,
             Domain::UnderseaGolfCom,
@@ -307,7 +302,6 @@ impl Display for Domain {
             Domain::BungHolioDay => write!(f, "bung.holio.day"),
             #[cfg(feature = "use-rquest")]
             Domain::StacysMom => write!(f, "stacys.mom"),
-            Domain::EdnyNet => write!(f, "edny.net"),
             Domain::FileSavedOrg => write!(f, "filesaved.org"),
             Domain::TerribleCoffeeOrg => write!(f, "terriblecoffee.org"),
             Domain::UnderseaGolfCom => write!(f, "underseagolf.com"),
@@ -337,7 +331,6 @@ mod tests {
 
     #[test]
     fn test_domain_from_str() {
-        assert_eq!(Domain::from("edny.net"), Domain::EdnyNet);
         assert_eq!(Domain::from("filesaved.org"), Domain::FileSavedOrg);
         assert_eq!(
             Domain::from("terriblecoffee.org"),
@@ -351,7 +344,6 @@ mod tests {
 
     #[test]
     fn test_domain_to_string() {
-        assert_eq!(Domain::EdnyNet.to_string(), "edny.net");
         assert_eq!(Domain::FileSavedOrg.to_string(), "filesaved.org");
         assert_eq!(Domain::TerribleCoffeeOrg.to_string(), "terriblecoffee.org");
         assert_eq!(

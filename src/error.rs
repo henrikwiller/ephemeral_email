@@ -25,6 +25,8 @@ pub enum InboxCreationError {
     InvalidName(String),
     #[error("An invalid email address was returned: {0}")]
     InvalidEmailAddress(#[from] EmailAddressError),
+    #[error("Rate limited, try again later")]
+    RateLimited,
 }
 
 /// Represents an error that can occur when fetching a message from an inbox.

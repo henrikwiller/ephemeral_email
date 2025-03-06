@@ -28,9 +28,9 @@ pub struct Message {
 /// let email = EmailAddress::new("test", Domain::FileSavedOrg);
 /// assert_eq!("test@filesaved.org", email.to_string());
 ///
-/// let email: EmailAddress = "test@edny.net".parse().unwrap();
+/// let email: EmailAddress = "test@terriblecoffee.org".parse().unwrap();
 /// assert_eq!("test", email.name);
-/// assert_eq!(Domain::EdnyNet, email.domain);
+/// assert_eq!(Domain::TerribleCoffeeOrg, email.domain);
 ///
 /// let email: Result<EmailAddress, _> = "invalid-email".parse();
 /// assert!(email.is_err());
