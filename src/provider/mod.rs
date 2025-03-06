@@ -2,6 +2,7 @@ use std::fmt::{self, Display, Formatter};
 use std::sync::Arc;
 
 use futures::lock::Mutex;
+#[cfg(feature = "use-rquest")]
 use muellmail::MuellmailProvider;
 use rand::distr::{Alphanumeric, Distribution, SampleString, StandardUniform};
 use rand::seq::IndexedRandom;
@@ -12,6 +13,7 @@ use crate::{EmailAddress, Message, MessageFetcherError};
 
 mod fakemail_net;
 mod mail_tm;
+#[cfg(feature = "use-rquest")]
 mod muellmail;
 mod tempmail_lol;
 
@@ -76,6 +78,7 @@ pub enum ProviderType {
     /// The Mail.tm provider.
     MailTm,
     /// The Muellmail.com provider.
+    #[cfg(feature = "use-rquest")]
     Muellmail,
     /// The TempMail.lol provider.
     TempMailLol,
@@ -86,6 +89,7 @@ impl ProviderType {
         match self {
             ProviderType::FakeMailNet => Box::new(fakemail_net::FakeMailNetProvider::new()),
             ProviderType::MailTm => Box::new(mail_tm::MailTmProvider::new()),
+            #[cfg(feature = "use-rquest")]
             ProviderType::Muellmail => Box::new(MuellmailProvider::new()),
             ProviderType::TempMailLol => Box::new(tempmail_lol::TempMailLolProvider::new()),
         }
@@ -95,6 +99,7 @@ impl ProviderType {
         vec![
             ProviderType::FakeMailNet,
             ProviderType::MailTm,
+            #[cfg(feature = "use-rquest")]
             ProviderType::Muellmail,
             ProviderType::TempMailLol,
         ]
@@ -106,6 +111,7 @@ impl Display for ProviderType {
         match self {
             ProviderType::FakeMailNet => write!(f, "FakeMail.net"),
             ProviderType::MailTm => write!(f, "Mail.tm"),
+            #[cfg(feature = "use-rquest")]
             ProviderType::Muellmail => write!(f, "Muellmail"),
             ProviderType::TempMailLol => write!(f, "TempMail.lol"),
         }

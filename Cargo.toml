@@ -17,11 +17,29 @@ categories = ["email", "api-bindings"]
 async-trait = "0.1.86"
 futures = "0.3.31"
 rand = "0.9.0"
-rquest = { version = "2.2.1", features = ["cookies", "json"] }
 serde = { version = "1.0.218", features = ["derive"] }
 serde_json = "1.0.139"
 thiserror = "2.0.11"
+reqwest = { version = "0.12.12", features = [
+    "cookies",
+    "json",
+], optional = true }
+rquest = { version = "2.2.1", features = ["cookies", "json"], optional = true }
+
 
 [dev-dependencies]
 anyhow = "1.0.96"
 tokio = { version = "1.43.0", features = ["full"] }
+
+[features]
+default = ["use-reqwest"]
+use-reqwest = ["dep:reqwest"]
+use-rquest = ["dep:rquest"]
+
+[[example]]
+name = "random_mail"
+required-features = ["use-reqwest"]
+
+[[example]]
+name = "with_rquest"
+required-features = ["use-rquest"]

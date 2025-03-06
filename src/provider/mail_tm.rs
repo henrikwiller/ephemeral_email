@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
+use crate::client::Client;
 use futures::lock::Mutex;
-use rquest::{header::HeaderValue, Client};
 use serde_json::json;
 
 use crate::{
@@ -14,6 +14,7 @@ pub(crate) struct MailTmProvider {}
 
 pub(crate) struct MailTmMessageFetcher {
     client: Client,
+    token: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -95,15 +96,11 @@ async fn try_login(client: &Client, email: &EmailAddress) -> Result<String, Inbo
 impl Provider for MailTmProvider {
     async fn new_inbox(&mut self, name: &str, domain: Domain) -> Result<Inbox, InboxCreationError> {
         let email = EmailAddress::new(name, domain);
-        let mut client = Client::builder().cookie_store(true).build()?;
+        let client = Client::builder().cookie_store(true).build()?;
 
         if let Ok(token) = try_login(&client, &email).await {
-            client.as_mut().headers().append(
-                "Authorization",
-                HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
-            );
             return Ok(Inbox {
-                message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client })),
+                message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client, token })),
                 email_address: email,
             });
         }
@@ -144,12 +141,8 @@ impl Provider for MailTmProvider {
         }
 
         let token = try_login(&client, &email).await?;
-        client.as_mut().headers().append(
-            "Authorization",
-            HeaderValue::from_str(&format!("Bearer {}", token)).unwrap(),
-        );
         Ok(Inbox {
-            message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client })),
+            message_fetcher: Arc::new(Mutex::new(MailTmMessageFetcher { client, token })),
             email_address: email,
         })
     }
@@ -169,6 +162,7 @@ impl MessageFetcher for MailTmMessageFetcher {
         let email_list: Vec<EmailListEntry> = self
             .client
             .get("https://api.mail.tm/messages")
+            .bearer_auth(&self.token)
             .header("ACCEPT", "application/json")
             .send()
             .await?
@@ -180,6 +174,7 @@ impl MessageFetcher for MailTmMessageFetcher {
             let email: Email = self
                 .client
                 .get(format!("https://api.mail.tm/messages/{}", email.id))
+                .bearer_auth(&self.token)
                 .header("ACCEPT", "application/json")
                 .send()
                 .await?

@@ -25,12 +25,12 @@ pub struct Message {
 /// ```
 /// use ephemeral_email::{Domain, EmailAddress};
 ///
-/// let email = EmailAddress::new("test", Domain::TenMinMailDe);
-/// assert_eq!("test@10minmail.de", email.to_string());
+/// let email = EmailAddress::new("test", Domain::FileSavedOrg);
+/// assert_eq!("test@filesaved.org", email.to_string());
 ///
-/// let email: EmailAddress = "test@jaga.email".parse().unwrap();
+/// let email: EmailAddress = "test@edny.net".parse().unwrap();
 /// assert_eq!("test", email.name);
-/// assert_eq!(Domain::JagaEmail, email.domain);
+/// assert_eq!(Domain::EdnyNet, email.domain);
 ///
 /// let email: Result<EmailAddress, _> = "invalid-email".parse();
 /// assert!(email.is_err());
@@ -78,8 +78,8 @@ mod tests {
     #[test]
     fn test_email_address_display() {
         assert_eq!(
-            EmailAddress::new("test", Domain::TenMinMailDe).to_string(),
-            "test@10minmail.de"
+            EmailAddress::new("test", Domain::FileSavedOrg).to_string(),
+            "test@filesaved.org"
         );
         assert_eq!(
             EmailAddress::new("test", Domain::Custom("custom.com".into())).to_string(),
@@ -89,9 +89,9 @@ mod tests {
 
     #[test]
     fn test_email_address_from_str() {
-        let email: EmailAddress = "test@10minmail.de".parse().unwrap();
+        let email: EmailAddress = "test@filesaved.org".parse().unwrap();
         assert_eq!(email.name, "test");
-        assert_eq!(email.domain, Domain::TenMinMailDe);
+        assert_eq!(email.domain, Domain::FileSavedOrg);
 
         let email: EmailAddress = "test@custom.com".parse().unwrap();
         assert_eq!(email.name, "test");

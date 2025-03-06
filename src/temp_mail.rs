@@ -15,7 +15,7 @@ use crate::{domain::Domain, error::InboxCreationError, provider::ProviderType, I
 /// async fn main() {
 ///     let inbox = TempMail::new()
 ///         .provider_type(ProviderType::MailTm)
-///         .domain(Domain::MuellMailCom)
+///         .domain(Domain::EdnyNet)
 ///         .name("example")
 ///         .create_inbox()
 ///         .await

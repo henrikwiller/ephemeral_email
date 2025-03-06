@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
+use crate::client::Client;
 use futures::lock::Mutex;
-use rquest::Client;
 use serde_json::json;
 
 use crate::{Domain, InboxCreationError, Message, MessageFetcherError};

@@ -4,7 +4,7 @@ use ephemeral_email::{ProviderType, TempMail};
 #[tokio::main]
 async fn main() -> Result<()> {
     let inbox = TempMail::new()
-        .provider_type(ProviderType::TempMailLol)
+        .provider_type(ProviderType::Muellmail)
         .name("test")
         .create_inbox()
         .await?;

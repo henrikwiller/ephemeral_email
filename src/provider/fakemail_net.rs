@@ -1,9 +1,8 @@
 use std::{sync::Arc, vec};
 
-use futures::lock::Mutex;
-use rquest::Client;
-
+use crate::client::Client;
 use crate::{Domain, EmailAddress, InboxCreationError, Message, MessageFetcherError};
+use futures::lock::Mutex;
 
 use super::{Inbox, Provider, ProviderType};
 

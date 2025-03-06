@@ -1,4 +1,4 @@
-use rquest::StatusCode;
+use crate::client::StatusCode;
 
 use crate::provider::ProviderType;
 
@@ -7,7 +7,7 @@ use crate::provider::ProviderType;
 #[non_exhaustive]
 pub enum InboxCreationError {
     #[error("Request error: {0}")]
-    RquestError(#[from] rquest::Error),
+    RquestError(#[from] crate::client::Error),
     /// A generic error that occurred when creating an inbox.
     #[error("Cannot create inbox: {0}")]
     CreationError(String),
@@ -32,7 +32,7 @@ pub enum InboxCreationError {
 #[non_exhaustive]
 pub enum MessageFetcherError {
     #[error("Request error: {0}")]
-    RquestError(#[from] rquest::Error),
+    RquestError(#[from] crate::client::Error),
     #[error("Invalid response status: {0}")]
     InvalidResponseStatus(StatusCode),
     /// A generic error that occurred when fetching a message.

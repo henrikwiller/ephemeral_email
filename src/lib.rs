@@ -1,3 +1,4 @@
+mod client;
 mod domain;
 mod email;
 mod error;
