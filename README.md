@@ -7,7 +7,7 @@
 - Create temporary email addresses
 - Fetch messages from temporary inboxes
 - Support for multiple email providers
-- Over 40 domains supported
+- Over 40 domains
 
 ## Email Providers
 

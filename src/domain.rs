@@ -8,11 +8,11 @@ use std::fmt::{self, Display, Formatter};
 /// ```
 /// use ephemeral_email::Domain;
 ///
-/// let domain = Domain::FileSavedOrg;
-/// assert_eq!("filesaved.org", domain.to_string());
+/// let domain = Domain::UnderseaGolfCom;
+/// assert_eq!("underseagolf.com", domain.to_string());
 ///
-/// let domain: Domain = "filesaved.org".into();
-/// assert_eq!(Domain::FileSavedOrg, domain);
+/// let domain: Domain = "underseagolf.com".into();
+/// assert_eq!(Domain::UnderseaGolfCom, domain);
 ///
 /// let domain = Domain::Custom("example.com".to_string());
 /// assert_eq!("example.com", domain.to_string());
@@ -129,10 +129,6 @@ pub enum Domain {
     #[cfg(feature = "use-rquest")]
     StacysMom,
 
-    // Domains from FakeMailNet
-    /// The filesaved.org domain.
-    FileSavedOrg,
-
     // Domains from TempMailLol
     /// The terriblecoffee.org domain.
     TerribleCoffeeOrg,
@@ -219,7 +215,6 @@ impl Domain {
             Domain::BungHolioDay,
             #[cfg(feature = "use-rquest")]
             Domain::StacysMom,
-            Domain::FileSavedOrg,
             Domain::TerribleCoffeeOrg,
             Domain::UnderseaGolfCom,
             Domain::JailBreakEverythingCom,
@@ -302,7 +297,6 @@ impl Display for Domain {
             Domain::BungHolioDay => write!(f, "bung.holio.day"),
             #[cfg(feature = "use-rquest")]
             Domain::StacysMom => write!(f, "stacys.mom"),
-            Domain::FileSavedOrg => write!(f, "filesaved.org"),
             Domain::TerribleCoffeeOrg => write!(f, "terriblecoffee.org"),
             Domain::UnderseaGolfCom => write!(f, "underseagolf.com"),
             Domain::JailBreakEverythingCom => write!(f, "jailbreakeverything.com"),
@@ -331,7 +325,6 @@ mod tests {
 
     #[test]
     fn test_domain_from_str() {
-        assert_eq!(Domain::from("filesaved.org"), Domain::FileSavedOrg);
         assert_eq!(
             Domain::from("terriblecoffee.org"),
             Domain::TerribleCoffeeOrg
@@ -344,7 +337,6 @@ mod tests {
 
     #[test]
     fn test_domain_to_string() {
-        assert_eq!(Domain::FileSavedOrg.to_string(), "filesaved.org");
         assert_eq!(Domain::TerribleCoffeeOrg.to_string(), "terriblecoffee.org");
         assert_eq!(
             Domain::Custom("custom.com".to_string()).to_string(),

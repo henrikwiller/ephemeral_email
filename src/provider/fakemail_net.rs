@@ -1,7 +1,7 @@
 use std::{sync::Arc, vec};
 
 use crate::client::Client;
-use crate::{Domain, EmailAddress, InboxCreationError, Message, MessageFetcherError};
+use crate::{Domain, InboxCreationError, Message, MessageFetcherError};
 use futures::lock::Mutex;
 
 use super::{Inbox, Provider, ProviderType};
@@ -54,8 +54,10 @@ async fn get_csrf_token(client: &Client) -> Result<String, InboxCreationError> {
 
 #[async_trait::async_trait]
 impl Provider for FakeMailNetProvider {
-    async fn new_inbox(&mut self, name: &str, domain: Domain) -> Result<Inbox, InboxCreationError> {
-        let email = EmailAddress::new(name, domain);
+    async fn new_random_inbox_from_name(
+        &mut self,
+        name: &str,
+    ) -> Result<Inbox, InboxCreationError> {
         let client = Client::builder().cookie_store(true).build()?;
         let csrf_token = get_csrf_token(&client).await?;
         let response = client
@@ -72,19 +74,19 @@ impl Provider for FakeMailNetProvider {
         let check_response = client
             .post("https://www.fakemail.net/index/email-check")
             .header("X-Requested-With", "XMLHttpRequest")
-            .form(&[("email", email.name.as_str()), ("format", "json")])
+            .form(&[("email", name), ("format", "json")])
             .send()
             .await?
             .text()
             .await?;
         if check_response != "\"ok\"" {
-            return Err(InboxCreationError::NameTaken(email.name));
+            return Err(InboxCreationError::NameTaken(name.into()));
         }
 
         let create_response = client
             .post("https://www.fakemail.net/index/new-email")
             .header("X-Requested-With", "XMLHttpRequest")
-            .form(&[("emailInput", email.name.as_str()), ("format", "json")])
+            .form(&[("emailInput", name), ("format", "json")])
             .send()
             .await?
             .text()
@@ -116,7 +118,7 @@ impl Provider for FakeMailNetProvider {
     }
 
     fn get_domains(&self) -> Vec<Domain> {
-        vec![Domain::FileSavedOrg]
+        vec![]
     }
 }
 
