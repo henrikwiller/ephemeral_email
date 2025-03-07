@@ -50,7 +50,9 @@ pub(crate) trait Provider: Send + Sync {
     }
 
     fn get_random_name(&self) -> String {
-        Alphanumeric.sample_string(&mut rand::rng(), 8)
+        Alphanumeric
+            .sample_string(&mut rand::rng(), 8)
+            .to_ascii_lowercase()
     }
     fn get_random_domain(&self) -> Result<Domain, InboxCreationError> {
         self.get_domains()

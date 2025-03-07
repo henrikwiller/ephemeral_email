@@ -107,7 +107,6 @@ impl Provider for MailTmProvider {
         name: &str,
     ) -> Result<Inbox, InboxCreationError> {
         let client = Client::builder().cookie_store(true).build()?;
-        let name = name.to_ascii_lowercase();
 
         let domain_response: Vec<DomainResponse> = client
             .get("https://api.mail.tm/domains")
