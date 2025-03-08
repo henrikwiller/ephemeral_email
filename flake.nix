@@ -47,6 +47,7 @@
       devShells.default = pkgs.mkShell {
         packages = [
           pkgs.bacon
+          pkgs.cargo-readme
         ];
         inputsFrom = [
           self.packages.${system}.default.devShell
