@@ -35,7 +35,7 @@ Add the following to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-ephemeral_email = "0.1"
+ephemeral_email = "0.2"
 ```
 
 Example usage:
@@ -70,7 +70,7 @@ and disable the default `use-reqwest` feature. For build issues, refer to the [r
 
 ```toml
 [dependencies]
-ephemeral_email = { version = "0.1", default-features = false, features = ["use-rquest"] }
+ephemeral_email = { version = "0.2", default-features = false, features = ["use-rquest"] }
 ```
 
 [rquest]: https://github.com/0x676e67/rquest

@@ -33,7 +33,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! ephemeral_email = "0.1"
+//! ephemeral_email = "0.2"
 //! ```
 //!
 //! Example usage:
@@ -68,7 +68,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! ephemeral_email = { version = "0.1", default-features = false, features = ["use-rquest"] }
+//! ephemeral_email = { version = "0.2", default-features = false, features = ["use-rquest"] }
 //! ```
 //!
 //! [rquest]: https://github.com/0x676e67/rquest
